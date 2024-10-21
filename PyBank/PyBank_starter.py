@@ -13,7 +13,9 @@ file_to_output = os.path.join("analysis", "budget_analysis.txt")  # Output file 
 total_months = 0
 total_net = 0
 # Add more variables to track other necessary financial data
-
+net_change_list = []
+greatest_increase = ["", 0]
+greatest_decrease = ["", 0]
 # Open and read the csv
 with open(file_to_load) as financial_data:
     reader = csv.reader(financial_data)
@@ -22,36 +24,49 @@ with open(file_to_load) as financial_data:
     header = next(reader)
 
     # Extract first row to avoid appending to net_change_list
-
+    pastMonth = next(reader)
 
     # Track the total and net change
-
+    total_months +=1
+    total_net += int(pastMonth[1])
 
     # Process each row of data
     for row in reader:
-
+        #print(row)
         # Track the total
-
-
+        total_months += 1
+        total_net += int(row[1])
         # Track the net change
-
-
+        net_change_list.append(int(row[1]) - int(pastMonth[1]))
+        pastMonth = row
         # Calculate the greatest increase in profits (month and amount)
-
+        if net_change_list[-1] > greatest_increase[1]:
+            greatest_increase = [row[0], net_change_list[-1]]
+            #print("changed")
+            #print(greatest_increase)
 
         # Calculate the greatest decrease in losses (month and amount)
+        if net_change_list[-1] < greatest_decrease[1]:
+            greatest_decrease = [row[0], net_change_list[-1]]
 
 
 
 # Calculate the average net change across the months
-
+average = 0
+net_sum = sum(net_change_list)
+average = net_sum / len(net_change_list)
 
 # Generate the output summary
-
+output = f"""Financial Analysis
+----------------------------
+Total Months: {total_months}
+Total: ${total_net}
+Average Change: ${round(average,2)}
+Greatest Increase in Profits: {greatest_increase[0]} (${greatest_increase[1]})
+Greatest Decrease in Profits: {greatest_decrease[0]} (${greatest_decrease[1]})"""
 
 # Print the output
-
-
+print(output)
 # Write the results to a text file
 with open(file_to_output, "w") as txt_file:
     txt_file.write(output)
